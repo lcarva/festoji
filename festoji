@@ -23,26 +23,24 @@ in_season() {
 
 nth_weekday() {
     local month=$1
-    local expected_weekday=$2  # Sunday is 0
-    # Third parameter is nth week in month, first week is 0
-    # The expression below computes the day of the month that always
-    # appears on the nth week, e.g. 1st on week 0, 8th on week 1
-    local n=$((($3 * 7) + 1))
-
-    local beg beg_weekday
-    read beg beg_weekday <<< $(date --date="${month} ${n} 00:00:00" '+%s %w')
-    local final=$((
-        $beg + ( ($expected_weekday - $beg_weekday) * DAY)
-    ))
-    printf $final
+    local expected_weekday=$2  # Sunday is 1
+    local nth_week=$3  # First week is 1
+    local day=$(
+        cal -1 "${month}" | \
+            awk '{print $'${expected_weekday}'}' | \
+            tail -n +3 | \
+            sed '/^$/d' | \
+            sed -n "${nth_week}p"
+    )
+    printf $(date --date="${month} ${day} 00:00:00" +%s)
 }
 
 xmas_end=$(date --date="december 26 00:00:00" +%s)
 in_season $TODAY $xmas_end 14 🎄
 
-# The number 5 means Friday, which is when Thanksgiving ends.
-# The number 3 means the fourth week of the month.
-thanksgiving_end=$(nth_weekday 'november' 5 3)
+# The number 6 means Friday, which is when Thanksgiving ends.
+# The number 4 means the fourth week of the month.
+thanksgiving_end=$(nth_weekday 'november' 6 4)
 in_season $TODAY $thanksgiving_end 7 🦃
 
 newyears_end=$(date --date="january 1 00:00:00" +%s)
