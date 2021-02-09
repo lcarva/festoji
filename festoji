@@ -46,4 +46,7 @@ in_season $TODAY $thanksgiving_end 7 🦃
 newyears_end=$(date --date="january 1 00:00:00" +%s)
 in_season $TODAY $newyears_end 5 🍾
 
+valentines_end=$(date --date="february 15 00:00:00" +%s)
+in_season $TODAY $valentines_end 7 ❤️
+
 echo 🐚
