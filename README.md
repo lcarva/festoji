@@ -1,7 +1,5 @@
 # festoji
 
-[![image status badge]][image status link]
-
 Seasonal festive emoji for the day 🎉
 
 ## Usage
@@ -52,6 +50,3 @@ rules:
   week: 4
   weekday: 4
 ```
-
-[image status badge]: https://quay.io/repository/lucarval/festoji/status
-[image status link]: https://quay.io/repository/lucarval/festoji
