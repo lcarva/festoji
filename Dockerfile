@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:34 AS builder
+FROM registry.fedoraproject.org/fedora:36 AS builder
 
 RUN dnf -y install \
     --setopt=deltarpm=0 \
