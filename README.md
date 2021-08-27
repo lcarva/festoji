@@ -6,10 +6,17 @@ Seasonal festive emoji for the day 🎉
 
 ## Usage
 
-Simply run the bash script:
+Simply run the golang program:
 
 ```
-./festoji
+go run main.go
+```
+
+Or, compile it into a binary and run it:
+
+```
+go build -o bin/festoji main.go
+./bin/festoji
 ```
 
 The current festive emoji will be printed to stdout.
