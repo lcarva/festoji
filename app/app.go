@@ -1,45 +1,30 @@
 package app
 
 import (
-	"time"
+    "errors"
+    "fmt"
+    "time"
 )
 
-func GetCharacter(today time.Time) string {
-    if InXmasSeason(today){
-        return "🎄"
-    }
-    if InThanksgivingSeason(today) {
-        return "🦃"
-    }
-    if InNewYearsSeason(today) {
-        return "🍾"
-    }
-    if InValentineSeason(today) {
-        return "❤️"
-    }
-    return "🐚"
-}
+func GetCharacter(today time.Time, config FestojiConfig) (string, error) {
 
-func InXmasSeason(today time.Time) bool {
-    end := GetEndOfDay(today, time.December, 25)
-    return InSeason(today, end, 14)
-}
+    for _, rule := range config.Rules {
+        var end time.Time
+        month := time.Month(rule.Month)
 
-func InThanksgivingSeason(today time.Time) bool {
-    // Get the end of the day for the fourth Thursday in November
-    end := GetEndOfNthWeekdayOfMonth(today, time.November, 3, time.Thursday)
-    return InSeason(today, end, 7)
-}
-
-func InNewYearsSeason(today time.Time) bool {
-    // This is a deliberate change from previous versions where December 31 was used.
-    end := GetEndOfDay(today, time.January, 1)
-    return InSeason(today, end, 6)
-}
-
-func InValentineSeason(today time.Time) bool {
-    end := GetEndOfDay(today, time.February, 14)
-    return InSeason(today, end, 7)
+        if rule.Day != 0 {
+            end = GetEndOfDay(today, month, rule.Day)
+        } else if rule.Weekday != 0 && rule.Week != 0 {
+            weekday := time.Weekday(rule.Weekday)
+            end = GetEndOfNthWeekdayOfMonth(today, month, rule.Week, weekday)
+        } else {
+            return "", errors.New(fmt.Sprint(rule.Name, " is not a valid rule"))
+        }
+        if InSeason(today, end, rule.Span) {
+            return rule.Emoji, nil
+        }
+    }
+    return config.Default, nil
 }
 
 func InSeason(today time.Time, end time.Time, spanDays int) bool {
@@ -56,7 +41,6 @@ func GetEndOfDay(today time.Time, month time.Month, day int) time.Time {
     }
     return end
 }
-
 
 // wow this is a terrible name
 func GetEndOfNthWeekdayOfMonth(today time.Time, month time.Month, nthWeek int, weekday time.Weekday) time.Time {
