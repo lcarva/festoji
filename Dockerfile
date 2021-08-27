@@ -1,15 +1,8 @@
-FROM registry.fedoraproject.org/fedora:34 AS builder
-
-RUN dnf -y install \
-    --setopt=deltarpm=0 \
-    --setopt=install_weak_deps=false \
-    --setopt=tsflags=nodocs \
-    golang
-
-WORKDIR /go/src/app
+FROM registry.redhat.io/rhel8/go-toolset:latest AS builder
+WORKDIR /opt/app-root/src
 COPY . .
 RUN go build -o bin/festoji main.go
 
 FROM scratch
-COPY --from=builder /go/src/app/bin/festoji /usr/bin/festoji
+COPY --from=builder /opt/app-root/src/bin/festoji /usr/bin/festoji
 CMD ["festoji"]
