@@ -35,6 +35,10 @@ Festoji comes with preset default rules. These can be overwritten by creating th
 # The default character to be used when no rules match.
 default: 🐚
 
+# If set to true, this configuration extends the default one. Rules are inserted after the
+# default ones. If set to false, the default configuration is completely ignored.
+extend: true
+
 rules:
 - name: Xmas
   emoji: 🎄
