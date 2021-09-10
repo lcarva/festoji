@@ -139,11 +139,11 @@ func TestGetConfigFromPathWithExtend(t *testing.T) {
     if config.Default == "" {
         t.Error("Expected non-empty .default value in config")
     }
-    if len(config.Rules) != 5 {
-        t.Error("Expected exactly five rules")
+    if len(config.Rules) <= 1 {
+        t.Error("Expected more than one rule")
     }
 
-    ruleOne := config.Rules[4]
+    ruleOne := config.Rules[len(config.Rules)-1]
     if ruleOne.Name != "five" {
         t.Error("Unexpected rule five name", ruleOne.Name)
     }

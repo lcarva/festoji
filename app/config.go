@@ -48,6 +48,11 @@ rules:
   span: 7
   month: 2
   day: 14
+- name: Halloween
+  emoji: 🎃
+  span: 7
+  month: 10
+  day: 31
 `
 
 func GetConfig(userConfigPath string) (FestojiConfig, error) {
