@@ -7,6 +7,7 @@ import (
 
 type FestojiConfig struct {
     Default string
+    Extend bool
     Rules []struct {
         // Required
         Name string
@@ -21,7 +22,7 @@ type FestojiConfig struct {
     }
 }
 
-var defaultConfig string = `
+var defaultYamlData string = `
 ---
 default: 🐚
 
@@ -50,15 +51,31 @@ rules:
 `
 
 func GetConfig(userConfigPath string) (FestojiConfig, error) {
-    config := FestojiConfig{}
-
-    data, err := ioutil.ReadFile(userConfigPath)
-    if err != nil {
-        data = []byte(defaultConfig)
+    defaultConfig := FestojiConfig{}
+    defaultData := []byte(defaultYamlData)
+    if err := yaml.UnmarshalStrict(defaultData, &defaultConfig); err != nil {
+        return defaultConfig, err
     }
 
-    if err:= yaml.UnmarshalStrict(data, &config); err != nil {
-        return config, err
+    userConfig := FestojiConfig{}
+    userData, readUserConfigErr := ioutil.ReadFile(userConfigPath)
+    if readUserConfigErr != nil {
+        return defaultConfig, nil
     }
-    return config, nil
+
+    if err := yaml.UnmarshalStrict(userData, &userConfig); err != nil {
+        return userConfig, err
+    }
+
+    if userConfig.Extend {
+        if userConfig.Default == "" {
+            userConfig.Default = defaultConfig.Default
+        }
+        newRules := defaultConfig.Rules
+        for _, rule := range userConfig.Rules {
+            newRules = append(newRules, rule)
+        }
+        userConfig.Rules = newRules
+    }
+    return userConfig, nil
 }

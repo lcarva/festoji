@@ -114,3 +114,43 @@ func TestGetConfigFromPathWithRules(t *testing.T) {
         t.Error("Unexpected rule two weekday", ruleTwo.Weekday)
     }
 }
+
+var testConfigWithExtend string = `
+---
+default: 😏
+extend: true
+rules:
+- name: five
+  emoji: 🐲
+  month: 1
+  day: 2
+`
+
+func TestGetConfigFromPathWithExtend(t *testing.T) {
+    tmpFile, errFile := ioutil.TempFile(os.TempDir(), "festoji-test-*.yaml")
+    if errFile != nil {
+        t.Error(errFile)
+    }
+    tmpFile.Write([]byte(testConfigWithExtend))
+    config, errConfig := GetConfig(tmpFile.Name())
+    if errConfig != nil {
+        t.Error(errConfig)
+    }
+    if config.Default == "" {
+        t.Error("Expected non-empty .default value in config")
+    }
+    if len(config.Rules) != 5 {
+        t.Error("Expected exactly five rules")
+    }
+
+    ruleOne := config.Rules[4]
+    if ruleOne.Name != "five" {
+        t.Error("Unexpected rule five name", ruleOne.Name)
+    }
+    if ruleOne.Month != 1 {
+        t.Error("Unexpected rule one month", ruleOne.Month)
+    }
+    if ruleOne.Day != 2 {
+        t.Error("Unexpected rule one day", ruleOne.Day)
+    }
+}
