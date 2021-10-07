@@ -20,6 +20,12 @@ jobs:
         username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
         password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
 
+     # Remove this once the ubuntu images comes with 1.23.0
+    - name: Update buildah
+      run: |
+        sudo apt-get -y update
+        sudo apt-get -y install buildah
+
     - name: Buildah Action
       id: build-image
       uses: redhat-actions/buildah-build@v2
