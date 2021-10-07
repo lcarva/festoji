@@ -20,6 +20,26 @@ jobs:
         username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
         password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
 
+     # Remove this once the ubuntu images comes with 1.23.0
+    - name: Update buildah
+      run: |
+        # Handle build dependencies
+        sudo apt-get -y install software-properties-common
+        sudo apt-get -y -qq update
+        sudo apt-get -y install bats btrfs-tools git libapparmor-dev libdevmapper-dev libglib2.0-dev libgpgme11-dev libseccomp-dev libselinux1-dev skopeo-containers go-md2man
+        sudo apt-get -y install golang-1.13
+
+        # Now build and install buildah
+        mkdir custom-buildah
+        cd custom-buildah
+        export GOPATH=`pwd`
+        git clone https://github.com/containers/buildah ./src/github.com/containers/buildah
+        git checkout v1.23.1
+        cd ./src/github.com/containers/buildah
+        PATH=/usr/lib/go-1.13/bin:$PATH make runc all SECURITYTAGS="apparmor seccomp"
+        sudo make install install.runc
+        buildah --help
+
     - name: Buildah Action
       id: build-image
       uses: redhat-actions/buildah-build@v2
