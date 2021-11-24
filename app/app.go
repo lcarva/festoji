@@ -34,26 +34,45 @@ func InSeason(today time.Time, end time.Time, spanDays int) bool {
 }
 
 func GetEndOfDay(today time.Time, month time.Month, day int) time.Time {
-    end := time.Date(today.Year(), month, day, 23, 59, 59, 0, today.Location())
+    end := GetEndOfDayThisYear(today, month, day)
     // Always get the next occurrence of the date
     if end.Before(today) {
-        end = time.Date(today.Year()+1, month, day, 23, 59, 59, 0, today.Location())
+        end = GetEndOfDayNextYear(today, month, day)
     }
+    return end
+}
+
+func GetEndOfDayThisYear(today time.Time, month time.Month, day int) time.Time {
+    end := time.Date(today.Year(), month, day, 23, 59, 59, 0, today.Location())
+    return end
+}
+
+func GetEndOfDayNextYear(today time.Time, month time.Month, day int) time.Time {
+    end := time.Date(today.Year()+1, month, day, 23, 59, 59, 0, today.Location())
     return end
 }
 
 // wow this is a terrible name
 func GetEndOfNthWeekdayOfMonth(today time.Time, month time.Month, nthWeek int, weekday time.Weekday) time.Time {
-    end := GetEndOfDay(today, month, 1)
+    // cannot use the more generic GetEndOfDay function here because we only want to forward
+    // to the next year if the *adjusted* end date is in the past.
+    end := GetEndOfNthWeekdayOfMonthStrict(GetEndOfDayThisYear(today, month, 1), nthWeek, weekday)
+    if end.Before(today) {
+        end = GetEndOfNthWeekdayOfMonthStrict(GetEndOfDayNextYear(today, month, 1), nthWeek, weekday)
+   }
+    return end
+}
+
+func GetEndOfNthWeekdayOfMonthStrict(start time.Time, nthWeek int, weekday time.Weekday) time.Time {
     daysToAdd := 0
 
-    if weekDaysDiff := int(weekday - end.Weekday()); weekDaysDiff >= 0 {
+    if weekDaysDiff := int(weekday - start.Weekday()); weekDaysDiff >= 0 {
         daysToAdd += weekDaysDiff
     } else {
-        daysToAdd += int(7 - end.Weekday() + weekday)
+        daysToAdd += int(7 - start.Weekday() + weekday)
     }
 
     // Advance to whichever nth week
-    daysToAdd += nthWeek * 7
-    return end.AddDate(0, 0, daysToAdd)
+    daysToAdd += (nthWeek-1) * 7
+    return start.AddDate(0, 0, daysToAdd)
 }

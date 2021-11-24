@@ -26,7 +26,7 @@ func TestGetEndOfNthWeekdayOfMonth_NextMonthThisWeekday(t *testing.T) {
     // of the requested weekday.
     date := time.Date(2021, time.August, 1, 0, 0, 0, 0, time.UTC)
     expectedNextDate := time.Date(2021, time.November, 25, 23, 59, 59, 0, time.UTC)
-    nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 3, time.Thursday)
+    nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
     if !nextDate.Equal(expectedNextDate) {
         t.Error("Date", nextDate, "is not as expected", expectedNextDate)
     }
@@ -37,7 +37,7 @@ func TestGetEndOfNthWeekdayOfMonth_NextMonthNextWeek(t *testing.T) {
     // of the requested weekday.
     date := time.Date(2021, time.August, 1, 0, 0, 0, 0, time.UTC)
     expectedNextDate := time.Date(2021, time.September, 13, 23, 59, 59, 0, time.UTC)
-    nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 1, time.Monday)
+    nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
     if !nextDate.Equal(expectedNextDate) {
         t.Error("Date", nextDate, "is not as expected", expectedNextDate)
     }
@@ -48,7 +48,7 @@ func TestGetEndOfNthWeekdayOfMonth_PreviousMonthThisWeekday(t *testing.T) {
     // the requested weekday.
     date := time.Date(2020, time.December, 1, 0, 0, 0, 0, time.UTC)
     expectedNextDate := time.Date(2021, time.November, 25, 23, 59, 59, 0, time.UTC)
-    nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 3, time.Thursday)
+    nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
     if !nextDate.Equal(expectedNextDate) {
         t.Error("Date", nextDate, "is not as expected", expectedNextDate)
     }
@@ -59,7 +59,7 @@ func TestGetEndOfNthWeekdayOfMonth_PreviousMonthNextWeek(t *testing.T) {
     // requested weekday.
     date := time.Date(2020, time.December, 1, 0, 0, 0, 0, time.UTC)
     expectedNextDate := time.Date(2021, time.September, 13, 23, 59, 59, 0, time.UTC)
-    nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 1, time.Monday)
+    nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
     if !nextDate.Equal(expectedNextDate) {
         t.Error("Date", nextDate, "is not as expected", expectedNextDate)
     }
