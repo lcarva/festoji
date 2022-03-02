@@ -10,8 +10,15 @@ jobs:
     name: Build and push container image
     runs-on: ubuntu-latest
 
+    permissions:
+      # Needed for signing the container image with GitHub OIDC Token
+      id-token: write
+
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@main
 
     - name: Log in to Red Hat Registry
       uses: redhat-actions/podman-login@v1
@@ -19,6 +26,14 @@ jobs:
         registry: registry.redhat.io
         username: ${{ secrets.REGISTRY_REDHAT_IO_USER }}
         password: ${{ secrets.REGISTRY_REDHAT_IO_PASSWORD }}
+
+    - name: Log in to quay.io
+      if: ${{ github.ref == 'refs/heads/master' }}
+      uses: redhat-actions/podman-login@v1
+      with:
+        username: ${{ secrets.REGISTRY_QUAY_IO_USER }}
+        password: ${{ secrets.REGISTRY_QUAY_IO_PASSWORD }}
+        registry: quay.io
 
     - name: Buildah Action
       id: build-image
@@ -30,7 +45,6 @@ jobs:
           ./Dockerfile
 
     - name: Push to quay.io
-      id: push-to-quay
       # Of course, only push to quay.io if this is a change in master
       if: ${{ github.ref == 'refs/heads/master' }}
       uses: redhat-actions/push-to-registry@v2
@@ -38,5 +52,9 @@ jobs:
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
         registry: quay.io
-        username: ${{ secrets.REGISTRY_QUAY_IO_USER }}
-        password: ${{ secrets.REGISTRY_QUAY_IO_PASSWORD }}
+
+    - name: Sign image with GitHub OIDC Token
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: cosign sign quay.io/lucarval/festoji:latest
+      env:
+        COSIGN_EXPERIMENTAL: 1
