@@ -39,12 +39,13 @@ jobs:
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: lucarval/festoji
+        image: quay.io/lucarval/festoji
         tags: latest
         dockerfiles: |
           ./Dockerfile
 
     - name: Push to quay.io
+      id: push-image
       # Of course, only push to quay.io if this is a change in master
       if: ${{ github.ref == 'refs/heads/master' }}
       uses: redhat-actions/push-to-registry@v2
@@ -55,6 +56,8 @@ jobs:
 
     - name: Sign image with GitHub OIDC Token
       if: ${{ github.ref == 'refs/heads/master' }}
-      run: cosign sign quay.io/lucarval/festoji:latest
+      run: cosign sign ${IMAGE}@${DIGEST}
       env:
+        IMAGE: ${{ steps.build-image.outputs.image }}
+        DIGEST: ${{ steps.push-image.outputs.digest }}
         COSIGN_EXPERIMENTAL: 1
