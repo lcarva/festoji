@@ -5,6 +5,11 @@ on:
   push:
   pull_request:
 
+env:
+  IMAGE_REGISTRY: quay.io
+  IMAGE_REPO: lucarval/festoji
+  IMAGE_TAGS: latest
+
 jobs:
   package:
     name: Build and push container image
@@ -39,8 +44,8 @@ jobs:
       id: build-image
       uses: redhat-actions/buildah-build@v2
       with:
-        image: quay.io/lucarval/festoji
-        tags: latest
+        image: ${{ env.IMAGE_REPO }}
+        tags: ${{ env.IMAGE_TAGS }}
         dockerfiles: |
           ./Dockerfile
 
@@ -50,14 +55,13 @@ jobs:
       if: ${{ github.ref == 'refs/heads/master' }}
       uses: redhat-actions/push-to-registry@v2
       with:
+        registry: ${{ env.IMAGE_REGISTRY }}
         image: ${{ steps.build-image.outputs.image }}
         tags: ${{ steps.build-image.outputs.tags }}
-        registry: quay.io
 
     - name: Sign image with GitHub OIDC Token
       if: ${{ github.ref == 'refs/heads/master' }}
-      run: cosign sign ${IMAGE}@${DIGEST}
+      run: cosign sign ${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}
       env:
-        IMAGE: ${{ steps.build-image.outputs.image }}
         DIGEST: ${{ steps.push-image.outputs.digest }}
         COSIGN_EXPERIMENTAL: 1
