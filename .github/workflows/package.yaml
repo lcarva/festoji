@@ -71,11 +71,14 @@ jobs:
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
+    # TODO: quay.io does not yet support uploading attestation format, see
+    # https://issues.redhat.com/browse/PROJQUAY-3386
+    # Use `--no-upload` parameter since cosign will still upload it to rekor.
     - name: Generate and store SBOM
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
           syft "${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}" -o spdx-json=sbom-spdx.json
-          cosign attest --predicate sbom-spdx.json --type spdx "${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}"
+          cosign attest --no-upload --predicate sbom-spdx.json --type spdx "${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}"
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
@@ -87,9 +90,12 @@ jobs:
         subcommand: container
         arguments: --repository "${IMAGE_REGISTRY}/${IMAGE_REPO}" --output-path "${PROVENANCE_FILE}" --digest "${DIGEST}" --tags "${IMAGE_TAGS}"
 
+    # TODO: quay.io does not yet support uploading attestation format, see
+    # https://issues.redhat.com/browse/PROJQUAY-3386
+    # Use `--no-upload` parameter since cosign will still upload it to rekor.
     - name: Store provenance
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
         jq '.predicate' "${PROVENANCE_FILE}" > provenance-predicate.att
-        cosign attest --predicate provenance-predicate.att --type slsaprovenance "${IMAGE_REGISTRY}/${IMAGE_REPO}@${IMAGE_DIGEST}"
+        cosign attest --no-upload --predicate provenance-predicate.att --type slsaprovenance "${IMAGE_REGISTRY}/${IMAGE_REPO}@${IMAGE_DIGEST}"
 
