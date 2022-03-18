@@ -82,20 +82,22 @@ jobs:
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
-    - name: Generate provenance
-      if: ${{ github.ref == 'refs/heads/master' }}
-      uses: philips-labs/slsa-provenance-action@v0.7.2
-      with:
-        command: generate
-        subcommand: container
-        arguments: --repository "${IMAGE_REGISTRY}/${IMAGE_REPO}" --output-path "${PROVENANCE_FILE}" --digest "${DIGEST}" --tags "${IMAGE_TAGS}"
+    # Cannot install expected package:
+    #   https://github.com/philips-labs/slsa-provenance-action/issues/161
+    # - name: Generate provenance
+    #   if: ${{ github.ref == 'refs/heads/master' }}
+    #   uses: philips-labs/slsa-provenance-action@v0.7.2
+    #   with:
+    #     command: generate
+    #     subcommand: container
+    #     arguments: --repository "${IMAGE_REGISTRY}/${IMAGE_REPO}" --output-path "${PROVENANCE_FILE}" --digest "${DIGEST}" --tags "${IMAGE_TAGS}"
 
     # TODO: quay.io does not yet support uploading attestation format, see
     # https://issues.redhat.com/browse/PROJQUAY-3386
     # Use `--no-upload` parameter since cosign will still upload it to rekor.
-    - name: Store provenance
-      if: ${{ github.ref == 'refs/heads/master' }}
-      run: |
-        jq '.predicate' "${PROVENANCE_FILE}" > provenance-predicate.att
-        cosign attest --no-upload --predicate provenance-predicate.att --type slsaprovenance "${IMAGE_REGISTRY}/${IMAGE_REPO}@${IMAGE_DIGEST}"
+    # - name: Store provenance
+    #   if: ${{ github.ref == 'refs/heads/master' }}
+    #   run: |
+    #     jq '.predicate' "${PROVENANCE_FILE}" > provenance-predicate.att
+    #     cosign attest --no-upload --predicate provenance-predicate.att --type slsaprovenance "${IMAGE_REGISTRY}/${IMAGE_REPO}@${IMAGE_DIGEST}"
 
