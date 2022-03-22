@@ -90,6 +90,7 @@ jobs:
         subcommand: container
         arguments: --repository "${IMAGE_REGISTRY}/${IMAGE_REPO}" --output-path "${PROVENANCE_FILE}" --digest "${DIGEST}" --tags "${IMAGE_TAGS}"
       env:
+        DIGEST: ${{ steps.push-image.outputs.digest }}
         # Disable COSIGN_EXPERIMENTAL as it causes issus with this step:
         #   https://github.com/philips-labs/slsa-provenance-action/issues/161
         COSIGN_EXPERIMENTAL: 0
