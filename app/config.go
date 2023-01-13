@@ -55,10 +55,15 @@ rules:
   month: 10
   day: 31
 - name: Andrew's Public Birthday
-  emoji: 🧔
+  emoji: 🫥
   span: 1
   month: 1
   day: 11
+- name: Simon's Public Birthday
+  emoji: 😛
+  span: 1
+  month: 1
+  day: 13
 `
 
 func GetConfig(userConfigPath string) (FestojiConfig, error) {
