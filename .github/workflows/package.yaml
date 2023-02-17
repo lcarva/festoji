@@ -1,5 +1,5 @@
 ---
-name: Packager
+name: Package
 
 on:
   push:
@@ -9,18 +9,20 @@ env:
   IMAGE_REGISTRY: quay.io
   IMAGE_REPO: lucarval/festoji
   IMAGE_TAGS: latest
-  # Enalbe using GitHub OIDC with Fulcio and Rekor
+  # Enable using GitHub OIDC with Fulcio and Rekor
   COSIGN_EXPERIMENTAL: 1
-  PROVENANCE_FILE: provenance.att
 
 jobs:
-  package:
-    name: Build and push container image
+  build:
     runs-on: ubuntu-latest
 
     permissions:
       # Needed for signing the container image with GitHub OIDC Token
       id-token: write
+
+    outputs:
+      image:  ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_REPO }}
+      digest: ${{ steps.push-image.outputs.digest }}
 
     steps:
     - uses: actions/checkout@v2
@@ -42,7 +44,7 @@ jobs:
       if: ${{ github.ref == 'refs/heads/master' }}
       uses: redhat-actions/podman-login@v1
       with:
-        username: ${{ secrets.REGISTRY_QUAY_IO_USER }}
+        username: ${{ vars.REGISTRY_QUAY_IO_USER }}
         password: ${{ secrets.REGISTRY_QUAY_IO_PASSWORD }}
         registry: quay.io
 
@@ -52,12 +54,10 @@ jobs:
       with:
         image: ${{ env.IMAGE_REPO }}
         tags: ${{ env.IMAGE_TAGS }}
-        dockerfiles: |
-          ./Dockerfile
+        dockerfiles: ./Dockerfile
 
     - name: Push to quay.io
       id: push-image
-      # Of course, only push to quay.io if this is a change in master
       if: ${{ github.ref == 'refs/heads/master' }}
       uses: redhat-actions/push-to-registry@v2
       with:
@@ -71,9 +71,6 @@ jobs:
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
-    # TODO: quay.io does not yet support uploading attestation format, see
-    # https://issues.redhat.com/browse/PROJQUAY-3386
-    # Use `--no-upload` parameter since cosign will still upload it to rekor.
     - name: Generate and store SBOM
       if: ${{ github.ref == 'refs/heads/master' }}
       run: |
@@ -82,25 +79,17 @@ jobs:
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
-    - name: Generate provenance
-      if: ${{ github.ref == 'refs/heads/master' }}
-      uses: philips-labs/slsa-provenance-action@v0.7.2
-      with:
-        command: generate
-        subcommand: container
-        arguments: --repository "${IMAGE_REGISTRY}/${IMAGE_REPO}" --output-path "${PROVENANCE_FILE}" --digest "${DIGEST}" --tags "${IMAGE_TAGS}"
-      env:
-        DIGEST: ${{ steps.push-image.outputs.digest }}
-        # Disable COSIGN_EXPERIMENTAL as it causes issus with this step:
-        #   https://github.com/philips-labs/slsa-provenance-action/issues/161
-        COSIGN_EXPERIMENTAL: 0
-
-    # TODO: quay.io does not yet support uploading attestation format, see
-    # https://issues.redhat.com/browse/PROJQUAY-3386
-    # Use `--no-upload` parameter since cosign will still upload it to rekor.
-    # - name: Store provenance
-    #   if: ${{ github.ref == 'refs/heads/master' }}
-    #   run: |
-    #     jq '.predicate' "${PROVENANCE_FILE}" > provenance-predicate.att
-    #     cosign attest --no-upload --predicate provenance-predicate.att --type slsaprovenance "${IMAGE_REGISTRY}/${IMAGE_REPO}@${IMAGE_DIGEST}"
-
+  provenance:
+    needs: [build]
+    permissions:
+      actions: read # for detecting the Github Actions environment.
+      id-token: write # for creating OIDC tokens for signing.
+      packages: write # for uploading attestations.
+    if: ${{ github.ref == 'refs/heads/master' }}
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.4.0
+    with:
+      image: ${{ needs.build.outputs.image }}
+      digest: ${{ needs.build.outputs.digest }}
+      registry-username: ${{ vars.REGISTRY_QUAY_IO_USER }}
+    secrets:
+      registry-password: ${{ secrets.REGISTRY_QUAY_IO_PASSWORD }}
