@@ -8,8 +8,6 @@ env:
   IMAGE_REGISTRY: quay.io
   IMAGE_REPO: lucarval/festoji
   IMAGE_TAGS: latest
-  # Enable using GitHub OIDC with Fulcio and Rekor
-  COSIGN_EXPERIMENTAL: 1
 
 jobs:
   build:
