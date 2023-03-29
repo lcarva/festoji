@@ -69,7 +69,7 @@ jobs:
 
     - name: Generate and store SBOM
       run: |
-          syft -vv attest "${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}" -o spdx-json
+          syft attest "${IMAGE_REGISTRY}/${IMAGE_REPO}@${DIGEST}" -o spdx-json
       env:
         DIGEST: ${{ steps.push-image.outputs.digest }}
 
