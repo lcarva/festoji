@@ -25,6 +25,40 @@ You can also use it as a container:
 podman run --rm quay.io/lucarval/festoji:latest
 ```
 
+### Verifying Image Signature
+
+The festoji container image is signed and attested. [cosign](https://github.com/sigstore/cosign)
+version 2 is required.
+
+To verify the image signature:
+
+```text
+cosign verify quay.io/lucarval/festoji:latest \
+  --certificate-github-workflow-repository lcarva/festoji \
+  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/master' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
+```
+
+To verify the image SBOM attestation:
+
+```text
+cosign verify-attestation quay.io/lucarval/festoji:latest \
+  --type spdx \
+  --certificate-github-workflow-repository lcarva/festoji \
+  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/master' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
+```
+
+To verify the image SLSA Provenance attestation:
+
+```text
+cosign verify-attestation quay.io/lucarval/festoji:latest \
+  --type slsaprovenance \
+  --certificate-github-workflow-repository lcarva/festoji \
+  --certificate-identity 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.4.0' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
+```
+
 ## Customizing
 
 Festoji comes with preset default rules. These can be overwritten by creating the file
