@@ -6,13 +6,13 @@ Seasonal festive emoji for the day 🎉
 
 Simply run the golang program:
 
-```
+```text
 go run main.go
 ```
 
 Or, compile it into a binary and run it:
 
-```
+```text
 go build -o bin/festoji main.go
 ./bin/festoji
 ```
@@ -21,11 +21,11 @@ The current festive emoji will be printed to stdout.
 
 You can also use it as a container:
 
-```
+```text
 podman run --rm quay.io/lucarval/festoji:latest
 ```
 
-# Customizing
+## Customizing
 
 Festoji comes with preset default rules. These can be overwritten by creating the file
 `~/.festoji.yaml`. For example:
