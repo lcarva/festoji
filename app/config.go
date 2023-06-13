@@ -2,7 +2,7 @@ package app
 
 import (
 	_ "embed"
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -34,7 +34,7 @@ func NewConfig(userConfigPath string) (Config, error) {
 		return Config{}, err
 	}
 
-	userData, err := ioutil.ReadFile(userConfigPath)
+	userData, err := os.ReadFile(userConfigPath)
 	if err != nil {
 		return defaultConfig, nil
 	}
