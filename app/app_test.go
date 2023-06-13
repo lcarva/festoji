@@ -9,13 +9,13 @@ func TestGetEndOfDay(t *testing.T) {
 	date := time.Date(2021, time.August, 1, 0, 0, 0, 0, time.UTC)
 
 	expectedAfter := time.Date(2021, time.September, 1, 23, 59, 59, 0, time.UTC)
-	after := GetEndOfDay(date, time.September, 1)
+	after := endOfDay(date, time.September, 1)
 	if !after.Equal(expectedAfter) {
 		t.Error("After date", after, "is not as expected", expectedAfter)
 	}
 
 	expectedBefore := time.Date(2022, time.July, 1, 23, 59, 59, 0, time.UTC)
-	before := GetEndOfDay(date, time.July, 1)
+	before := endOfDay(date, time.July, 1)
 	if !before.Equal(expectedBefore) {
 		t.Error("Before date", before, "is not as expected", expectedBefore)
 	}
@@ -26,7 +26,7 @@ func TestGetEndOfNthWeekdayOfMonth_NextMonthThisWeekday(t *testing.T) {
 	// of the requested weekday.
 	date := time.Date(2021, time.August, 1, 0, 0, 0, 0, time.UTC)
 	expectedNextDate := time.Date(2021, time.November, 25, 23, 59, 59, 0, time.UTC)
-	nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
+	nextDate := endOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
 	if !nextDate.Equal(expectedNextDate) {
 		t.Error("Date", nextDate, "is not as expected", expectedNextDate)
 	}
@@ -37,7 +37,7 @@ func TestGetEndOfNthWeekdayOfMonth_NextMonthNextWeek(t *testing.T) {
 	// of the requested weekday.
 	date := time.Date(2021, time.August, 1, 0, 0, 0, 0, time.UTC)
 	expectedNextDate := time.Date(2021, time.September, 13, 23, 59, 59, 0, time.UTC)
-	nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
+	nextDate := endOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
 	if !nextDate.Equal(expectedNextDate) {
 		t.Error("Date", nextDate, "is not as expected", expectedNextDate)
 	}
@@ -48,7 +48,7 @@ func TestGetEndOfNthWeekdayOfMonth_PreviousMonthThisWeekday(t *testing.T) {
 	// the requested weekday.
 	date := time.Date(2020, time.December, 1, 0, 0, 0, 0, time.UTC)
 	expectedNextDate := time.Date(2021, time.November, 25, 23, 59, 59, 0, time.UTC)
-	nextDate := GetEndOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
+	nextDate := endOfNthWeekdayOfMonth(date, time.November, 4, time.Thursday)
 	if !nextDate.Equal(expectedNextDate) {
 		t.Error("Date", nextDate, "is not as expected", expectedNextDate)
 	}
@@ -59,7 +59,7 @@ func TestGetEndOfNthWeekdayOfMonth_PreviousMonthNextWeek(t *testing.T) {
 	// requested weekday.
 	date := time.Date(2020, time.December, 1, 0, 0, 0, 0, time.UTC)
 	expectedNextDate := time.Date(2021, time.September, 13, 23, 59, 59, 0, time.UTC)
-	nextDate := GetEndOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
+	nextDate := endOfNthWeekdayOfMonth(date, time.September, 2, time.Monday)
 	if !nextDate.Equal(expectedNextDate) {
 		t.Error("Date", nextDate, "is not as expected", expectedNextDate)
 	}
@@ -70,17 +70,17 @@ func TestInSeason(t *testing.T) {
 	endDate := time.Date(2021, time.December, 26, 0, 0, 0, 0, time.UTC)
 	span := 14
 
-	if InSeason(todayDate, endDate, span) {
+	if inSeason(todayDate, endDate, span) {
 		t.Error(todayDate, "should not be in season:", endDate, span)
 	}
 	for i := 0; i < span; i++ {
 		todayDate = todayDate.AddDate(0, 0, 1)
-		if !InSeason(todayDate, endDate, span) {
+		if !inSeason(todayDate, endDate, span) {
 			t.Error(todayDate, "should not be in season:", endDate, span)
 		}
 	}
 	todayDate = todayDate.AddDate(0, 0, 1)
-	if InSeason(todayDate, endDate, span) {
+	if inSeason(todayDate, endDate, span) {
 		t.Error(todayDate, "should not be in season:", endDate, span)
 	}
 }

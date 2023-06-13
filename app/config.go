@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type FestojiConfig struct {
+type Config struct {
 	Default string
 	Extend  bool
 	Rules   []struct {
@@ -27,19 +27,18 @@ type FestojiConfig struct {
 //go:embed config.yaml
 var defaultYamlData string
 
-func GetConfig(userConfigPath string) (FestojiConfig, error) {
-	defaultConfig := FestojiConfig{}
+func NewConfig(userConfigPath string) (Config, error) {
 	defaultData := []byte(defaultYamlData)
+	defaultConfig := Config{}
 	if err := yaml.UnmarshalStrict(defaultData, &defaultConfig); err != nil {
-		return defaultConfig, err
+		return Config{}, err
 	}
 
-	userConfig := FestojiConfig{}
-	userData, readUserConfigErr := ioutil.ReadFile(userConfigPath)
-	if readUserConfigErr != nil {
+	userData, err := ioutil.ReadFile(userConfigPath)
+	if err != nil {
 		return defaultConfig, nil
 	}
-
+	userConfig := Config{}
 	if err := yaml.UnmarshalStrict(userData, &userConfig); err != nil {
 		return userConfig, err
 	}
@@ -48,11 +47,7 @@ func GetConfig(userConfigPath string) (FestojiConfig, error) {
 		if userConfig.Default == "" {
 			userConfig.Default = defaultConfig.Default
 		}
-		newRules := defaultConfig.Rules
-		for _, rule := range userConfig.Rules {
-			newRules = append(newRules, rule)
-		}
-		userConfig.Rules = newRules
+		userConfig.Rules = append(defaultConfig.Rules, userConfig.Rules...)
 	}
 	return userConfig, nil
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetConfigDefault(t *testing.T) {
-	config, err := GetConfig("/this/path/does/not/exit")
+	config, err := NewConfig("/this/path/does/not/exit")
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,7 +30,7 @@ func TestGetConfigFromPathWithNoRules(t *testing.T) {
 		t.Error(errFile)
 	}
 	tmpFile.Write([]byte(testConfigWithRules))
-	config, errConfig := GetConfig(tmpFile.Name())
+	config, errConfig := NewConfig(tmpFile.Name())
 	if errConfig != nil {
 		t.Error(errConfig)
 	}
@@ -63,7 +63,7 @@ func TestGetConfigFromPathWithRules(t *testing.T) {
 		t.Error(errFile)
 	}
 	tmpFile.Write([]byte(testConfigWithRules))
-	config, errConfig := GetConfig(tmpFile.Name())
+	config, errConfig := NewConfig(tmpFile.Name())
 	if errConfig != nil {
 		t.Error(errConfig)
 	}
@@ -132,7 +132,7 @@ func TestGetConfigFromPathWithExtend(t *testing.T) {
 		t.Error(errFile)
 	}
 	tmpFile.Write([]byte(testConfigWithExtend))
-	config, errConfig := GetConfig(tmpFile.Name())
+	config, errConfig := NewConfig(tmpFile.Name())
 	if errConfig != nil {
 		t.Error(errConfig)
 	}
