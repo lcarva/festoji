@@ -1,6 +1,7 @@
 package app
 
 import (
+	_ "embed"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
@@ -23,48 +24,8 @@ type FestojiConfig struct {
 	}
 }
 
-var defaultYamlData string = `
----
-default: 🐚
-
-rules:
-- name: Xmas
-  emoji: 🎄
-  span: 14
-  month: 12
-  day: 25
-- name: Thanksgiving
-  emoji: 🦃
-  span: 7
-  month: 11
-  week: 4
-  weekday: 4
-- name: New Year's
-  emoji: 🍾
-  span: 5
-  month: 1
-  day: 1
-- name: Valentine's Day
-  emoji: ❤️
-  span: 7
-  month: 2
-  day: 14
-- name: Halloween
-  emoji: 🎃
-  span: 7
-  month: 10
-  day: 31
-- name: Andrew's Public Birthday
-  emoji: 🫥
-  span: 1
-  month: 1
-  day: 11
-- name: Simon's Public Birthday
-  emoji: 😛
-  span: 1
-  month: 1
-  day: 13
-`
+//go:embed config.yaml
+var defaultYamlData string
 
 func GetConfig(userConfigPath string) (FestojiConfig, error) {
 	defaultConfig := FestojiConfig{}
