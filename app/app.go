@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Character(today time.Time, config Config) (string, error) {
+func Character(today time.Time, config Config) (string, string, error) {
 
 	for _, rule := range config.Rules {
 		var end time.Time
@@ -18,13 +18,13 @@ func Character(today time.Time, config Config) (string, error) {
 			weekday := time.Weekday(rule.Weekday)
 			end = endOfNthWeekdayOfMonth(today, month, rule.Week, weekday)
 		} else {
-			return "", errors.New(fmt.Sprint(rule.Name, " is not a valid rule"))
+			return "", "", errors.New(fmt.Sprint(rule.Name, " is not a valid rule"))
 		}
 		if inSeason(today, end, rule.Span) {
-			return rule.Emoji, nil
+			return rule.Emoji, rule.Name, nil
 		}
 	}
-	return config.Default, nil
+	return config.Default, "(default)", nil
 }
 
 func inSeason(today time.Time, end time.Time, spanDays int) bool {
