@@ -24,7 +24,7 @@ jobs:
       digest: ${{ steps.push-image.outputs.digest }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@main
