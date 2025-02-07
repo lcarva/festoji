@@ -55,7 +55,7 @@ To verify the image SLSA Provenance attestation:
 cosign verify-attestation quay.io/lucarval/festoji:latest \
   --type slsaprovenance \
   --certificate-github-workflow-repository lcarva/festoji \
-  --certificate-identity 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.7.0' \
+  --certificate-identity 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@refs/tags/v1.10.0' \
   --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
 ```
 
