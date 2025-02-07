@@ -85,6 +85,7 @@ jobs:
     with:
       image: ${{ needs.build.outputs.image }}
       digest: ${{ needs.build.outputs.digest }}
+      compile-generator: true
     secrets:
       registry-username: ${{ vars.REGISTRY_QUAY_IO_USER }}
       registry-password: ${{ secrets.REGISTRY_QUAY_IO_PASSWORD }}
