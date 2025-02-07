@@ -35,7 +35,7 @@ To verify the image signature:
 ```text
 cosign verify quay.io/lucarval/festoji:latest \
   --certificate-github-workflow-repository lcarva/festoji \
-  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/master' \
+  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/main' \
   --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
 ```
 
@@ -45,7 +45,7 @@ To verify the image SBOM attestation:
 cosign verify-attestation quay.io/lucarval/festoji:latest \
   --type spdx \
   --certificate-github-workflow-repository lcarva/festoji \
-  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/master' \
+  --certificate-identity 'https://github.com/lcarva/festoji/.github/workflows/package.yaml@refs/heads/main' \
   --certificate-oidc-issuer 'https://token.actions.githubusercontent.com'
 ```
 
