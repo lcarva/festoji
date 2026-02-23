@@ -33,7 +33,7 @@ jobs:
       uses: sigstore/cosign-installer@main
 
     - name: Install Syft
-      uses: anchore/sbom-action/download-syft@v0.18.0
+      uses: anchore/sbom-action/download-syft@v0.20.0
 
     - name: Log in to Red Hat Registry
       uses: redhat-actions/podman-login@v1
